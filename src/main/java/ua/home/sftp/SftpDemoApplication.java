@@ -1,21 +1,23 @@
 package ua.home.sftp;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.Session;
 import org.springframework.integration.file.remote.session.SessionFactory;
-import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
-import org.springframework.integration.sftp.session.SftpSession;
+import ua.home.dbf.DBFReader;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 @SpringBootApplication
-@EnableConfigurationProperties//(SFTPConfig.class)
+@EnableConfigurationProperties
 @Slf4j
 public class SftpDemoApplication implements CommandLineRunner {
 
@@ -37,13 +39,38 @@ public class SftpDemoApplication implements CommandLineRunner {
 	@Override
 	public void run(String... strings) throws Exception {
 
-
 		try (Session session = sessionFactory.getSession()) {
 
 			String[] listNames = session.listNames(path);
 
-			for (String listName : listNames) {
-				System.out.println(listName);
+			System.out.printf("listName.length = '%s'\n", listNames != null ? ""+listNames.length : "null");
+
+			File tmpdbf = File.createTempFile("tmpdbf", "");
+
+			System.out.println(tmpdbf.getAbsolutePath());
+
+
+
+
+
+			for (String name : listNames) {
+
+				if (StringUtils.endsWithIgnoreCase(name, ".dbf")) {
+
+					String filePath = path + name;
+
+					System.out.printf("\tname = '%s'\n", filePath);
+
+
+					try (FileOutputStream outputStream = FileUtils.openOutputStream(tmpdbf)) {
+						session.read(filePath, outputStream);
+						outputStream.flush();
+					}
+
+
+						DBFReader.dbfProcessing(tmpdbf.getAbsolutePath());
+				}
+
 			}
 
 

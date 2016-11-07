@@ -17,18 +17,7 @@ import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
 @Getter
 public class SFTPConfig {
 
-
     private DefaultSftpSessionFactory sftp;
-
-
-
-
-//    private String host;
-//    private int port;
-//    private String username;
-//    private String password;
-//    private boolean allowUnknownKey;
-//    private int timeout;
 
     private boolean enableSessionCache;
 
@@ -36,27 +25,6 @@ public class SFTPConfig {
     @ConfigurationProperties(prefix = "sftp")
     @Bean
     public DefaultSftpSessionFactory ftpsSessionFactory() {
-
-        //        sf.setHost(host);
-//        sf.setPort(port);
-//        sf.setUser(username);
-//        sf.setPassword(password);
-//        sf.setAllowUnknownKeys(allowUnknownKey);
-//        sf.setTimeout(timeout);
-//        sf.setEnableDaemonThread(true);
-
-//        if (enableSessionCache) {
-//            return cachingSessionFactory(sf);
-//        }
-
-        return new DefaultSftpSessionFactory();
+		return new DefaultSftpSessionFactory();
     }
-
-    public SessionFactory cachingSessionFactory(SessionFactory sessionFactory) {
-
-
-        return new CachingSessionFactory(ftpsSessionFactory());
-
-    }
-
 }
